@@ -65,5 +65,9 @@ export class Navbar {
       text: 'Articles',
       href: '/articles',
     },
+    {
+      text: 'Counter-Lab',
+      href: '/counter-lab',
+    },
   ]);
 }

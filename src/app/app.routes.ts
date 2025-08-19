@@ -22,6 +22,11 @@ export const routes: Routes = [
       import('../articles/articles.routes').then((a) => a.ARTICLES_ROUTES),
   },
   {
+    path: 'counter-lab',
+    loadChildren: () =>
+      import('../counter/counter.routes').then((r) => r.COUNTER_ROUTES),
+  },
+  {
     path: '**',
     redirectTo: 'home',
   },
