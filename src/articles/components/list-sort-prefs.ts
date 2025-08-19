@@ -1,4 +1,5 @@
-import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ArticlesStore } from '../stores/articles-store';
 
 @Component({
   selector: 'app-list-sort-prefs',
@@ -6,15 +7,15 @@ import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
   imports: [],
   template: ` <div class="join">
     <button
-      [disabled]="sortOption() === 'oldestFirst'"
-      (click)="sortOption.set('oldestFirst')"
+      [disabled]="store.sortingBy() === 'oldestFirst'"
+      (click)="store.setSortBy('oldestFirst')"
       class="btn join-item"
     >
       Oldest First
     </button>
     <button
-      [disabled]="sortOption() === 'newestFirst'"
-      (click)="sortOption.set('newestFirst')"
+      [disabled]="store.sortingBy() === 'newestFirst'"
+      (click)="store.setSortBy('newestFirst')"
       class="btn join-item"
     >
       Newest First
@@ -23,5 +24,7 @@ import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
   styles: ``,
 })
 export class ListSortPrefs {
-  sortOption = signal<'oldestFirst' | 'newestFirst'>('oldestFirst');
+  store = inject(ArticlesStore);
+  //    constructor(private store:ArticlesStore) {}
+  // sortOption = model<ArticleSortOptions>('oldestFirst'); // both an input and output [()] from the parent to "share" a signal.
 }
