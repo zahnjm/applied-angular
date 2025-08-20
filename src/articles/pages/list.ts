@@ -3,20 +3,19 @@ import {
   Component,
   computed,
   inject,
-  resource,
 } from '@angular/core';
 
 import { ArticleListItem } from '../components/article-list-item';
 import { ListSortPrefs } from '../components/list-sort-prefs';
 import { ArticlesStore } from '../stores/articles-store';
-import { ApiArticleItem, ApiArticles } from '../types';
+import { ApiArticleItem } from '../types';
 
 @Component({
   selector: 'app-articles-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ArticleListItem, ListSortPrefs],
   template: `
-    @if (articlesResource.isLoading()) {
+    @if (store.articles.isLoading()) {
       <div class="alert alert-info">
         <span class="loading loading-dots"></span> Loading your stuff
       </div>
@@ -26,7 +25,7 @@ import { ApiArticleItem, ApiArticles } from '../types';
         <app-list-sort-prefs />
       </div>
       <div class="grid grid-rows">
-        @for (article of sortedList(); track article.id) {
+        @for (article of store.sortedList(); track article.id) {
           <app-article-list-item [article]="article" />
         } @empty {
           <div class="alert alert-info">
@@ -34,40 +33,20 @@ import { ApiArticleItem, ApiArticles } from '../types';
           </div>
         }
       </div>
-      @if (articlesResource.error()) {
-        <div class="alert alert-error">
-          There was an error. {{ articlesResource.error() }}
-        </div>
-      }
     }
   `,
   styles: ``,
 })
 export class List {
   // something new an still "experimental" in Angular, but I use it all the time.
-  articlesResource = resource<ApiArticles, unknown>({
-    loader: () => fetch('https://fake.api.com/articles').then((r) => r.json()),
-  });
+  //   articlesResource = resource<ApiArticles, unknown>({
+  //     loader: () => fetch('https://fake.api.com/articles').then((r) => r.json()),
+  //   });
 
   store = inject(ArticlesStore);
 
-  sortedList = computed(() => {
-    const articles = this.articlesResource.value() ?? [];
-    const sortBy = this.store.sortingBy();
-    return articles.toSorted((lhs: ApiArticleItem, rhs: ApiArticleItem) => {
-      const leftDate = Date.parse(lhs.added);
-      const rightDate = Date.parse(rhs.added);
-      if (leftDate < rightDate) {
-        return sortBy === 'oldestFirst' ? 1 : -1;
-      }
-      if (leftDate > rightDate) {
-        return sortBy === 'newestFirst' ? -1 : 1;
-      }
-      return 0;
-    });
-  });
   numberOfArticles = computed(() => {
-    const articles = this.articlesResource.value();
+    const articles = this.store.articles.value();
     if (articles) {
       return articles.length;
     } else {
